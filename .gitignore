@@ -1,0 +1,17 @@
+public
+!frontend/public
+api/.env
+tools/dev
+
+node_modules
+
+.DS_Store
+**/.DS_Store
+**/__pycache__
+html_src/bin
+!html_src/bin/Debug/net6.0/publish
+html_src/obj
+
+venv
+*.sqlite3
+*.log

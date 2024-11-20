@@ -1,0 +1,85 @@
+:root {
+  font-family: 'SF Display Pro', Helvetica, 'Segoe UI', system-ui, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+%h1 {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.25;
+
+  @media screen and (min-width: 400px) {
+    font-size: 32px;
+  }
+}
+
+%body {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.16;
+
+  @media screen and (min-width: 400px) {
+    font-size: 18px;
+  }
+}
+
+%body2 {
+  font-style: normal;
+  font-weight: 300;
+  font-size: 11px;
+  line-height: 1.16;
+
+  @media screen and (min-width: 400px) {
+    font-size: 16px;
+  }
+}
+
+@mixin screen-xs {
+  @media (max-width <= 576px) {
+    @content;
+  }
+}
+
+@mixin screen-s {
+  @media (min-width: 576px)
+  //and (max-width: 768px)
+  {
+    @content;
+  }
+}
+
+@mixin screen-md {
+  @media (min-width: 768px)
+  // and (max-width: 992px)
+  {
+    @content;
+  }
+}
+
+@mixin screen-lg {
+  @media (min-width: 992px)
+  // and (max-width: 1200px)
+  {
+    @content;
+  }
+}
+
+@mixin screen-xl {
+  @media (min-width: 1200px)
+  {
+    @content;
+  }
+}
