@@ -15,8 +15,18 @@ func indexHandler(w http.ResponseWriter, _ *http.Request) {
 }
 
 func stationHandler(w http.ResponseWriter, r *http.Request) {
+  stationId := r.PathValue("stationId")
+
+  /*
+  response := responses.StationResponse{
+    StationId: stationId,
+  }
+  */
+
+  response, _ := frostApi.Sources([]string{stationId})
+
   encoder := json.NewEncoder(w)
-  encoder.Encode(r.PathValue("stationId"))
+  encoder.Encode(response.Data[0])
 }
 
 var frostApi *frost.Api
