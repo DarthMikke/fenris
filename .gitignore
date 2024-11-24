@@ -2,6 +2,7 @@ public
 !frontend/public
 api/.env
 tools/dev
+tmp
 
 node_modules
 

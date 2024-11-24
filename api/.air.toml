@@ -1,0 +1,12 @@
+
+[build]
+# Just plain old shell command. You could use `make` as well.
+cmd = "go build -o ./tmp/main . && chmod +x ./tmp/main"
+# Binary file yields from `cmd`.
+bin = "./tmp/main"
+[log]
+# Show log time
+time = false
+level = "debug"
+# silence all logs produced by air 
+silent = false
