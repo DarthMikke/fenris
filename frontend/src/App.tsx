@@ -9,40 +9,33 @@ import {
   useOutlet,
   useLoaderData
 } from 'react-router-dom';
-import ParentView, { loader as indexLoader } from './routes/index.tsx';
+import RootView, { loader as indexLoader } from './routes/index.tsx';
+import StationView, { loader as stationLoader } from './routes/s/_stationId.tsx';
+import StatsView, { loader as statsLoader } from './routes/s/_stationId/from/_fromYear/to/_toYear.tsx';
 
 //enum LoadedState { loading, loaded, failed }
 
-const StationData = () => {
-  return <p>Heisann!</p>;
-}
+console.log()
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <ParentView />,
+      element: <RootView />,
       loader: indexLoader,
       children: [
         {
-          path: "/stations",
-          element: <p>Lastar inn...</p>,
-          loader: async ({request}: LoaderFunctionArgs) => {
-          }
-        },
-        {
-          path: "/s/:stationId",
-          element: <StationData />,
-          loader: (...args) => {
-            return args;
-          }
-        },
-        {
-          path: "/s/:stationId/from/:fromYear/to/:toYear",
-          element: <StationData />,
-          loader: (...args) => {
-            return args;
-          }
+          path: "s/:stationId",
+          id: "station",
+          element: <StationView />,
+          loader: stationLoader,
+          children: [
+            {
+              path: "from/:fromYear/to/:toYear",
+              element: <StatsView />,
+              loader: statsLoader,
+            },
+          ],
         },
         {
           path: "/test/",
