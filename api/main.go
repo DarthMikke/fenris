@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"encoding/json"
 	"net/http"
+  "millim.no/fenris/frost"
+  // "millim.no/fenris/responses"
+  "github.com/joho/godotenv"
+  "os"
 )
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
@@ -15,9 +19,16 @@ func stationHandler(w http.ResponseWriter, r *http.Request) {
   encoder.Encode(r.PathValue("stationId"))
 }
 
+var frostApi *frost.Api
+
 func main() {
-  http.HandleFunc("/api/s/{stationId}", stationHandler)
+  godotenv.Load()
+
+  frostApi = &frost.Api {}
+  frostApi.Setup(os.Getenv("client_id"),os.Getenv("client_secret"))
+
   http.HandleFunc("/api/s/{stationId}/from/{fromYear}/to/{toYear}", stationHandler)
+  http.HandleFunc("/api/s/{stationId}", stationHandler)
   http.HandleFunc("/", indexHandler)
   http.ListenAndServe(":5000", nil)
 }
