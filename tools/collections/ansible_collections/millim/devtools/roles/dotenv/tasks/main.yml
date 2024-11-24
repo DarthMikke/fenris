@@ -1,0 +1,16 @@
+---
+# tasks file for roles/dotenv
+- name: Check if dotenv file exists
+  ansible.builtin.stat:
+    path: "{{ dotenv_dest }}"
+  register: dotenv_exists
+- name: Debug message
+  ansible.builtin.debug:
+    msg: "Dotenv file already exists: {{ dotenv_dest }}. Pass dotenv_overwrite=True to overwrite it."
+  when: dotenv_exists.stat.exists and (dotenv_exists.stat.exists == true and dotenv_overwrite == false)
+- name: Create the dotenv file
+  ansible.builtin.template:
+    src: templates/dotenv.j2
+    dest: "{{ dotenv_dest }}"
+    mode: "{{ dotenv_mode }}"
+  when: dotenv_exists.stat.exists is not undefined and (dotenv_exists.stat.exists == false or dotenv_overwrite)

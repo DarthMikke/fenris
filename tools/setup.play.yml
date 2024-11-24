@@ -1,0 +1,28 @@
+---
+- name: Set up local development environment
+  hosts: localhost
+  connection: local
+  vars:
+    compose_exposed_port: 8081
+    envvars:
+      MEDIA_ROOT: "/app/uploads/"
+      DB_NAME: '/db/db.sqlite3'
+  tasks:
+    - name: Generate a dotenv file
+      ansible.builtin.include_role:
+        name: millim.devtools.dotenv
+      vars:
+        dotenv_dest: ../api/.env
+        dotenv_envvars: "{{ envvars }}"
+    - name: Make compose project
+      ansible.builtin.include_role:
+        name: millim.devtools.api_compose
+      vars:
+        api_compose_dir: "dev"
+        api_compose_image: "golang:1.23-alpine"
+        api_compose_exposed_port: "{{ compose_exposed_port }}"
+        api_compose_command: "/bin/sh /app/run.sh"
+        api_compose_volumes:
+          - ../../api:/app
+        api_compose_proxy_volumes:
+          - ../../public:/srv/portfolio/public

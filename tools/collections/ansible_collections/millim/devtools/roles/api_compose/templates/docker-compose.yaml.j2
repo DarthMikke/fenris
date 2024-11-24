@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+  webhost:
+    image: {{ api_compose_proxy_image }}
+    volumes:
+      - ./dev.conf:/srv/apache/dev.conf
+{% if api_compose_proxy_volumes %}
+{% for volume in api_compose_proxy_volumes %}
+      - {{ volume }}
+{% endfor %}
+{% endif %}
+    ports:
+      - {{ api_compose_exposed_port }}:80
+  {{ api_compose_container_name }}:
+    image: {{ api_compose_image }}
+{% if api_compose_volumes is defined %}
+    volumes:
+{% for volume in api_compose_volumes %}
+      - {{ volume }}
+{% endfor %}
+{% endif %}
+{% if api_compose_command is defined %}
+    command: {{ api_compose_command }}
+{% endif %}
+{% if api_compose_services is defined %}
+{{ api_compose_services }}
+{% endif %}
+{% if api_compose_define_volumes is defined %}
+volumes:
+{% for volume in api_compose_define_volumes %}
+  {{ volume }}:
+{% endfor %}
+{% endif %}
+networks:
+  rproxy:

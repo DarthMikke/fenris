@@ -1,0 +1,3 @@
+{% for varname in dotenv_envvars.keys() %}
+{{ varname }}="{{ dotenv_envvars[varname] }}"
+{% endfor %}

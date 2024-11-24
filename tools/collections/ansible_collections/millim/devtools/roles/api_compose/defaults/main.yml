@@ -1,0 +1,11 @@
+---
+# defaults file for roles/api_compose
+api_compose_dir: "api"
+api_compose_proxy_image: "ghcr.io/darthmikke/webhost"
+api_compose_exposed_port: 8081
+api_compose_db: false
+api_compose_container_name: "api"
+api_compose_container_port: 5000
+api_compose_image: "ghcr.io/darthmikke/wsgi:0.0.1-b7"
+api_compose_command: "runserver 0.0.0.0:{{ api_compose_container_port }}"
+api_compose_state: stopped

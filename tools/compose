@@ -1,0 +1,4 @@
+# Køyr API-serveren
+
+cd dev
+docker-compose $@

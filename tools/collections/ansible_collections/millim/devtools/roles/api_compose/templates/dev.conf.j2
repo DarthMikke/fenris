@@ -1,0 +1,16 @@
+<VirtualHost *:80>
+  ServerName dev.millim.no
+
+  DocumentRoot /srv/portfolio/public
+  <Directory /srv/portfolio/public>
+    Require all granted
+  </Directory>
+
+  RewriteEngine On
+  RewriteCond /srv/portfolio/public/%{REQUEST_URI} !-f
+  RewriteRule ^(.+) /api/$1 [L,PT]
+
+  ProxyPreserveHost on
+  ProxyPass "/api/" "http://{{ api_compose_container_name }}:{{ api_compose_container_port }}/"
+  ProxyPassReverse "/api/" "http://{{ api_compose_container_name }}:{{ api_compose_container_port }}/"
+</VirtualHost>
