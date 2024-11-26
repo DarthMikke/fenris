@@ -1,13 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
+
 	"millim.no/fenris/frost"
+
 	// "millim.no/fenris/responses"
-	"github.com/joho/godotenv"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
