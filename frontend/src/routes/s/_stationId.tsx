@@ -9,8 +9,11 @@ import { Station } from '../index';
 import { useEffect } from 'react';
 import { stations } from '../../mock_data/stations.json';
 
-export const loader = ({ params }: LoaderFunctionArgs) => {
-  return (stations as Station[]).filter(s => s.id == params.stationId)[0]
+export const loader = async ({ params }: LoaderFunctionArgs) => {
+  const response = await fetch(`/api/s/${params.stationId}`);
+  const station = (await response.json()) as Station;
+
+  return station;
 };
 
 export default () => {
@@ -24,8 +27,8 @@ export default () => {
     }
   }, [statsView]);
 
-  const availableFrom = station.availableFrom;
-  const availableTo = station.availableTo;
+  const availableFrom = station.validFrom;
+  const availableTo = station.validTo;
 
   return <>
     <div className="flex-fill">

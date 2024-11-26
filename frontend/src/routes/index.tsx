@@ -29,8 +29,8 @@ export type Station = {
   "elevation": number,
   "latitude": number,
   "longitude": number,
-  "availableFrom": string|null,
-  "availableTo": string|null,
+  "validFrom": string|null,
+  "validTo": string|null,
   "wmo": number,
   "wigos": string,
   "owner": string
