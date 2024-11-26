@@ -36,9 +36,9 @@ func stationHandler(w http.ResponseWriter, r *http.Request) {
   response := new (map[string]any)
   response["id"] = (upstreamResponse.Data[0]).Id
   */
-  
+
   encoder := json.NewEncoder(w)
-  encoder.Encode(upstreamResponse)
+  encoder.Encode(upstreamResponse.Data[0])
 }
 
 var frostApi *frost.Api
