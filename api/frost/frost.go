@@ -132,3 +132,31 @@ func (a *Api) Sources (ids []string) (*SourcesResponse, bool, error) {
 
 	return &decoded, cached, nil
 }
+
+/*
+Implements Frost API's `observations` endpoint.
+
+https://frost.met.no/api.html#!/observations/observations
+ */
+func (a *Api) Observations (sources []string, referenceTime string, elements []string) (*string, bool, error) {
+	queryArgs := []string{
+		"sources=" + strings.Join(sources, ","),
+		"referencetime=" + referenceTime,
+		"elements=" + strings.Join(elements, ","),
+	}
+
+	response, cached, err := a.get("https://frost.met.no/observations/v0.jsonld?" + strings.Join(queryArgs, "&"))
+
+	if (err != nil) {
+		return nil, false, err
+	}
+
+	/*
+	var decoded SourcesResponse;
+	reader := strings.NewReader(*response)
+	decoder := json.NewDecoder(reader)
+	decoder.Decode(&decoded)
+	*/
+
+	return response, cached, nil
+}

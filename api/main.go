@@ -45,8 +45,38 @@ func stationHandler(w http.ResponseWriter, r *http.Request) {
 	encoder.Encode(upstreamResponse.Data[0])
 }
 
-func statsHandler(w http.ResponseWriter, _ *http.Request) {
-	fmt.Fprintf(w, "{}");
+func statsHandler(w http.ResponseWriter, r *http.Request) {
+	stationId := r.PathValue("stationId")
+	fromYear, err := strconv.Atoi(r.PathValue("fromYear"))
+	if (err != nil) {
+		panic(err)
+	}
+	toYear, err := strconv.Atoi(r.PathValue("toYear"))
+	if (err != nil) {
+		panic(err)
+	}
+	upstreamResponse, cached, err := frostApi.Observations(
+		[]string{stationId},
+		fmt.Sprintf("%d-01-01/%d-01-01", fromYear, toYear + 1),
+		[]string{"air_temperature"},
+	)
+
+	if (err != nil) {
+		panic(err)
+	}
+	if (cached) {
+		w.Header().Add("X-Cache-Hit", "1")
+	}
+
+	/*
+	response := new (map[string]any)
+	response["id"] = (upstreamResponse.Data[0]).Id
+
+	encoder := json.NewEncoder(w)
+	encoder.Encode(upstreamResponse.Data[0])
+	*/
+
+	fmt.Fprintf(w, *upstreamResponse);
 }
 
 var frostApi *frost.Api
