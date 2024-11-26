@@ -25,6 +25,18 @@ func stationHandler(w http.ResponseWriter, r *http.Request) {
 
   upstreamResponse, cached, err := frostApi.Sources([]string{stationId})
 
+  if (err != nil) {
+    panic(err)
+  }
+  if (cached) {
+    w.Header().Add("X-Cache-Hit", "1")
+  }
+
+  /*
+  response := new (map[string]any)
+  response["id"] = (upstreamResponse.Data[0]).Id
+  */
+  
   encoder := json.NewEncoder(w)
   encoder.Encode(upstreamResponse)
 }
