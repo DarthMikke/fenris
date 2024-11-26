@@ -23,10 +23,10 @@ func stationHandler(w http.ResponseWriter, r *http.Request) {
   }
   */
 
-  response, _ := frostApi.Sources([]string{stationId})
+  upstreamResponse, cached, err := frostApi.Sources([]string{stationId})
 
   encoder := json.NewEncoder(w)
-  encoder.Encode(response.Data[0])
+  encoder.Encode(upstreamResponse)
 }
 
 var frostApi *frost.Api

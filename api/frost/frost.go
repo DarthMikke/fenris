@@ -1,9 +1,14 @@
 package frost
 
 import (
+	"bytes"
+	"context"
+	"fmt"
 	"encoding/json"
 	"net/http"
 	"strings"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type SourceObject struct {
@@ -65,6 +70,8 @@ type Api struct {
 	clientId	string
 
 	httpClient	http.Client
+	redis 	*redis.Client
+	Ctx	context.Context
 }
 
 func (a *Api) Setup (ClientId string, ClientSecret string) {
@@ -73,24 +80,55 @@ func (a *Api) Setup (ClientId string, ClientSecret string) {
     a.clientSecret = ClientSecret
 
     a.httpClient = http.Client{}
+
+		a.Ctx = context.Background()
+    a.redis = redis.NewClient(&redis.Options{
+    	Addr: "redis:6379",
+    	Password: 	"",
+    	DB:	0,
+    })
 }
 
-func (a *Api) get (url string) (*http.Response, error) {
+func (a *Api) get (url string) (*string, bool, error) {
+	value, err := a.redis.Get(a.Ctx, url).Result()
+	if (err == redis.Nil) {
+		resp, err := a._get(url)
+		fmt.Println("Caching:", url)
+
+		if (err != nil) {
+			return nil, false, err
+		}
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+		s := buf.String()
+
+		a.redis.Set(a.Ctx, url, &s, 3_600*1_000_000_000)
+		return &s, false, nil
+	} else if (err != nil) {
+		return nil, false, err
+	} else {
+		fmt.Println("Cache hit:", url)
+		return &value, true, nil
+	}
+}
+
+func (a *Api) _get (url string) (*http.Response, error) {
 	request, _ := http.NewRequest("GET", url, nil)
 	request.SetBasicAuth(a.clientId, a.clientSecret)
 	return a.httpClient.Do(request)
 }
 
-func (a *Api) Sources (ids []string) (*SourcesResponse, error) {
-	response, err := a.get("https://frost.met.no/sources/v0.jsonld?ids=" + strings.Join(ids, ","))
+func (a *Api) Sources (ids []string) (*SourcesResponse, bool, error) {
+	response, cached, err := a.get("https://frost.met.no/sources/v0.jsonld?ids=" + strings.Join(ids, ","))
 
 	if (err != nil) {
-		return nil, err
+		return nil, false, err
 	}
 
 	var decoded SourcesResponse;
-	decoder := json.NewDecoder(response.Body)
+	reader := strings.NewReader(*response)
+	decoder := json.NewDecoder(reader)
 	decoder.Decode(&decoded)
 
-	return &decoded, nil
+	return &decoded, cached, nil
 }
