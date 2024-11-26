@@ -26,3 +26,7 @@
           - ../../api:/app
         api_compose_proxy_volumes:
           - ../../public:/srv/portfolio/public
+        api_compose_services: |2
+          # Additional services
+            redis:
+              image: redis:alpine3.20
