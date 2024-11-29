@@ -83,8 +83,8 @@ Coordinates []float32 `json:"coordinates"` // Coordinates of the geometry object
 }
 type Observation struct {
 ElementId string `json:"elementId"` // The ID of the element being observed. ,
-Value string `json:"value"` // The observed value (either a number or a UTC datetime of the format YYYY-MM-DD hh:mm:ss.sss). ,
-OrigValue string `json:"origValue"` // The original observed value (either a number or a UTC datetime of the format YYYY-MM-DD hh:mm:ss.sss). ,
+Value float32 `json:"value"` // The observed value (either a number or a UTC datetime of the format YYYY-MM-DD hh:mm:ss.sss). ,
+OrigValue float32 `json:"origValue"` // The original observed value (either a number or a UTC datetime of the format YYYY-MM-DD hh:mm:ss.sss). ,
 Unit string `json:"unit"` // The unit of measurement of the observed value. ,
 CodeTable string `json:"codeTable"` // If the unit is a code, the codetable that describes the codes used. ,
 Level Level `json:"level"` // The vertical level at which the value was observed (if known). ,
