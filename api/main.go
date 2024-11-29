@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
 	"millim.no/fenris/frost"
 
 	// "millim.no/fenris/responses"
-	"os"
 
 	"github.com/joho/godotenv"
 )
