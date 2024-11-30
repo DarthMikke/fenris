@@ -9,8 +9,7 @@ import (
 	"strings"
 
 	"millim.no/fenris/frost"
-
-	// "millim.no/fenris/responses"
+	"millim.no/fenris/stats"
 
 	"github.com/joho/godotenv"
 )
@@ -76,19 +75,9 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	// Sort into bins with different YYYY-MM component in
 	// the referenceTime field.
 	var bins [][]frost.ObservationsAtRefTime
-	for i, e := range decodedData.Data {
-		if (i == 0) {
-			bins = append(bins, *new ([]frost.ObservationsAtRefTime))
-			bins[len(bins) - 1] = append(bins[len(bins) - 1], e)
-			continue
-		}
-		thisDate := e.ReferenceTime
-		previousDate := decodedData.Data[i - 1].ReferenceTime
-		if (thisDate[:7] != previousDate[:7]) {
-			bins = append(bins, *new ([]frost.ObservationsAtRefTime))
-		}
-		bins[len(bins) - 1] = append(bins[len(bins) - 1], e)
-	}
+	bins = stats.Periodise(decodedData.Data, func (x frost.ObservationsAtRefTime) string {
+		return x.ReferenceTime
+	})
 
 	encoder := json.NewEncoder(w)
 	encoder.Encode(bins)
