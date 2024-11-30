@@ -74,10 +74,15 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Sort into bins with different YYYY-MM component in
 	// the referenceTime field.
-	var bins [][]frost.ObservationsAtRefTime
-	bins = stats.Periodise(decodedData.Data, func (x frost.ObservationsAtRefTime) string {
-		return x.ReferenceTime
-	})
+	var series []stats.Measurement[[]frost.Observation]
+	for _, v := range decodedData.Data {
+		series = append(series, stats.Measurement[[]frost.Observation]{
+			Timestamp: v.ReferenceTime,
+			Data: v.Observations,
+		})
+	}
+	var bins [][]stats.Measurement[[]frost.Observation]
+	bins = stats.Periodise(series)
 
 	encoder := json.NewEncoder(w)
 	encoder.Encode(bins)
