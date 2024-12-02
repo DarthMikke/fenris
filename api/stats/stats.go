@@ -10,6 +10,14 @@ type Measurement[V any] struct {
     Data V;
 }
 
+func Wrap[V any](series []V, columns int) (rows [][]V) {
+	for i := 0; i < len(series); i += columns {
+		j := min(i + columns, len(series))
+		rows = append(rows, series[i:j])
+	}
+	return rows
+}
+
 func Periodise[V any](series []Measurement[V]) [][]Measurement[V] {
 	var bins [][]Measurement[V]
 	for i, e := range series {

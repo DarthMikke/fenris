@@ -83,9 +83,11 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var bins [][]stats.Measurement[[]frost.Observation]
 	bins = stats.Periodise(series)
+	var wrapped [][][]stats.Measurement[[]frost.Observation]
+	wrapped = stats.Wrap(bins, 12)
 
 	encoder := json.NewEncoder(w)
-	encoder.Encode(bins)
+	encoder.Encode(wrapped)
 	// fmt.Fprintf(w, *upstreamResponse);
 }
 
