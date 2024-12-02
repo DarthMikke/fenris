@@ -1,6 +1,7 @@
 package stats
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -26,7 +27,20 @@ func Periodise[V any](series []Measurement[V]) [][]Measurement[V] {
 			panic(err)
 		}
 		if !(date1.Year() == date0.Year() && date0.Month() == date1.Month()) {
-			bins = append(bins, *new ([]Measurement[V]))
+			j := 0
+			for !( date1.Before(date0) ) {
+				if (j > 90) {
+					fmt.Printf(
+						"Too large gap in time series between %s and %s.\n",
+						e.Timestamp,
+						series[i - 1].Timestamp,
+					)
+					break
+				}
+				bins = append(bins, *new ([]Measurement[V]))
+				date0 = time.Date(date0.Year(), date0.Month() + 1, date0.Day(), 0, 0, 0, 0, date0.Location())
+				j++
+			}
 		}
 		bins[len(bins) - 1] = append(bins[len(bins) - 1], e)
 	}
