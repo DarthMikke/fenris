@@ -116,11 +116,26 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 			return stats.AnnotatedMax(numbers)
 		},
 	)
+	mins := stats.Reduce(
+		flattened,
+		func(obs []stats.Measurement[[]frost.Observation]) stats.Measurement[float64] {
+			var numbers []stats.Measurement[float64]
+			for _, e := range obs {
+				mapped := stats.Measurement[float64]{
+					Timestamp: e.Timestamp,
+					Data: float64(e.Data[0].Value),
+				}
+				numbers = append(numbers, mapped)
+			}
+			return stats.AnnotatedMin(numbers)
+		},
+	)
 
 	encoder := json.NewEncoder(w)
 	encoder.Encode(map[string]any{
 		"average": averages,
 		"max": maxs,
+		"min": mins,
 	})
 	// fmt.Fprintf(w, *upstreamResponse);
 }
