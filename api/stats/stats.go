@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+type numeric interface {
+	int32|int64|float32|float64
+}
+
 type Measurement[V any] struct {
     Timestamp string;
     Data V;
@@ -105,7 +109,7 @@ func Reduce[V any, U any](vector [][]V, reducer func([]V) U) (reduced []U) {
 	return
 }
 
-func Average[V int32|int64|float32|float64](numbers []V) float64 {
+func Average[V numeric](numbers []V) float64 {
 	var sum V
 	sum = 0
 	for _, e := range numbers {
@@ -114,7 +118,7 @@ func Average[V int32|int64|float32|float64](numbers []V) float64 {
 	return float64(sum)/float64(len(numbers));
 }
 
-func AnnotatedMax[V int32|int64|float32|float64](numbers []Measurement[V]) Measurement[V] {
+func AnnotatedMax[V numeric](numbers []Measurement[V]) Measurement[V] {
 	max := numbers[0]
 	for _, e := range numbers {
 		if (e.Data > max.Data) {
@@ -124,7 +128,7 @@ func AnnotatedMax[V int32|int64|float32|float64](numbers []Measurement[V]) Measu
 	return max;
 }
 
-func AnnotatedMin[V int32|int64|float32|float64](numbers []Measurement[V]) Measurement[V] {
+func AnnotatedMin[V numeric](numbers []Measurement[V]) Measurement[V] {
 	min := numbers[0]
 	for _, e := range numbers {
 		if (e.Data < min.Data) {
