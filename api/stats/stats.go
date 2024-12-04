@@ -33,6 +33,21 @@ func Transpose[V any](matrix [][]V) (transposed [][]V, err error) {
 	err = nil
 	return
 }
+
+func Flatten3D[V any](matrix [][][]V) [][]V {
+	var flattened [][]V
+	for _, plane := range matrix {
+		var newrow []V
+		for _, row := range plane {
+			for _, e := range row {
+				newrow = append(newrow, e)
+			}
+		}
+		flattened = append(flattened, newrow)
+	}
+
+	return flattened
+}
 func Wrap[V any](series []V, columns int) (rows [][]V) {
 	for i := 0; i < len(series); i += columns {
 		j := min(i + columns, len(series))
