@@ -99,3 +99,30 @@ func Reduce[V any, U any](vector [][]V, reducer func([]V) U) (reduced []U) {
 	}
 	return
 }
+
+func Average[V int32|int64|float32|float64](numbers []V) float64 {
+	var sum V
+	for _, e := range numbers {
+		sum += e
+	}
+	return float64(sum)/float64(len(numbers));
+}
+
+func AnnotatedMax[V int32|int64|float32|float64](numbers []Measurement[V]) Measurement[V] {
+	var max Measurement[V]
+	for _, e := range numbers {
+		if (e.Data > max.Data) {
+			max = e
+		}
+	}
+	return max;
+}
+
+func AnnotatedMin[V int32|int64|float32|float64](numbers []V) float64 {
+	var sum V
+	for _, e := range numbers {
+		sum += e
+	}
+	return float64(sum)/float64(len(numbers));
+}
+
