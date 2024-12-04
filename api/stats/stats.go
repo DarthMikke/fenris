@@ -48,6 +48,10 @@ func Flatten3D[V any](matrix [][][]V) [][]V {
 
 	return flattened
 }
+
+// Convert a vector to a matrix by starting a new row
+// every `columns` number of columns. The last row might have
+// a different number of columns.
 func Wrap[V any](series []V, columns int) (rows [][]V) {
 	for i := 0; i < len(series); i += columns {
 		j := min(i + columns, len(series))
@@ -56,6 +60,7 @@ func Wrap[V any](series []V, columns int) (rows [][]V) {
 	return rows
 }
 
+// Convert time series data to a matrix with one column per calendar month.
 func Periodise[V any](series []Measurement[V]) [][]Measurement[V] {
 	var bins [][]Measurement[V]
 	for i, e := range series {
