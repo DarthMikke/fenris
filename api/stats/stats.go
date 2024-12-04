@@ -65,7 +65,7 @@ func Wrap[V any](series []V, columns int) (rows [][]V) {
 }
 
 // Convert time series data to a matrix with one column per calendar month.
-func Periodise[V any](series []Measurement[V]) [][]Measurement[V] {
+func Periodise[V any](series []Measurement[V], period string) [][]Measurement[V] {
 	var bins [][]Measurement[V]
 	for i, e := range series {
 		if (i == 0) {
@@ -73,15 +73,26 @@ func Periodise[V any](series []Measurement[V]) [][]Measurement[V] {
 			bins[len(bins) - 1] = append(bins[len(bins) - 1], e)
 			continue
 		}
-		date1, err := time.Parse(time.RFC3339, e.Timestamp)
-		if (err != nil) {
-			panic(err)
+
+		samebin := false
+		if (period == "P1M") {
+			samebin = e.Timestamp[:7] == series[i - 1].Timestamp[:7]
+		} else if period == "P1D" {
+			samebin = e.Timestamp[:10] == series[i - 1].Timestamp[:10]
+		} else {
+			panic("Invalid time period.")
 		}
-		date0, err := time.Parse(time.RFC3339, series[i - 1].Timestamp)
-		if (err != nil) {
-			panic(err)
-		}
-		if !(date1.Year() == date0.Year() && date0.Month() == date1.Month()) {
+
+		if !samebin {
+			date1, err := time.Parse(time.RFC3339, e.Timestamp)
+			if (err != nil) {
+				panic(err)
+			}
+			date0, err := time.Parse(time.RFC3339, series[i - 1].Timestamp)
+			if (err != nil) {
+				panic(err)
+			}
+
 			j := 0
 			for !( date1.Before(date0) ) {
 				if (j > 90) {

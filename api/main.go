@@ -81,10 +81,10 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 			Data: v.Observations,
 		})
 	}
-	var bins [][]stats.Measurement[[]frost.Observation]
-	bins = stats.Periodise(series)
+	var binsByMonth [][]stats.Measurement[[]frost.Observation]
+	binsByMonth = stats.Periodise(series, "P1M")
 	var threed [][][]stats.Measurement[[]frost.Observation]
-	threed = stats.Wrap(bins, 12)
+	threed = stats.Wrap(binsByMonth, 12)
 	threed, err = stats.Transpose(threed)
 	if (err != nil) {
 		panic(err)
