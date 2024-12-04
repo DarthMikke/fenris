@@ -83,11 +83,45 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var bins [][]stats.Measurement[[]frost.Observation]
 	bins = stats.Periodise(series)
-	var wrapped [][][]stats.Measurement[[]frost.Observation]
-	wrapped = stats.Wrap(bins, 12)
+	var threed [][][]stats.Measurement[[]frost.Observation]
+	threed = stats.Wrap(bins, 12)
+	threed, err = stats.Transpose(threed)
+	if (err != nil) {
+		panic(err)
+	}
+	var flattened [][]stats.Measurement[[]frost.Observation]
+	flattened = stats.Flatten3D(threed)
+
+	averages := stats.Reduce(
+		flattened,
+		func(obs []stats.Measurement[[]frost.Observation]) float64 {
+			var numbers []float64
+			for _, e := range obs {
+				numbers = append(numbers, float64(e.Data[0].Value))
+			}
+			return stats.Average(numbers)
+		},
+	)
+	maxs := stats.Reduce(
+		flattened,
+		func(obs []stats.Measurement[[]frost.Observation]) stats.Measurement[float64] {
+			var numbers []stats.Measurement[float64]
+			for _, e := range obs {
+				mapped := stats.Measurement[float64]{
+					Timestamp: e.Timestamp,
+					Data: float64(e.Data[0].Value),
+				}
+				numbers = append(numbers, mapped)
+			}
+			return stats.AnnotatedMax(numbers)
+		},
+	)
 
 	encoder := json.NewEncoder(w)
-	encoder.Encode(wrapped)
+	encoder.Encode(map[string]any{
+		"average": averages,
+		"max": maxs,
+	})
 	// fmt.Fprintf(w, *upstreamResponse);
 }
 
