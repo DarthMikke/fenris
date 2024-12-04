@@ -10,6 +10,29 @@ type Measurement[V any] struct {
     Data V;
 }
 
+func Transpose[V any](matrix [][]V) (transposed [][]V, err error) {
+    defer func() {
+        if r := recover(); r != nil {
+            transposed = nil
+            if iserr, ok := r.(error); ok {
+            	err = iserr
+            }
+        }
+    }()
+
+	rows := len(matrix)
+	cols := len(matrix[0])
+
+	for i := 0; i < cols; i++ {
+		var newrow []V
+		for j := 0; j < rows; j++ {
+			newrow = append(newrow, matrix[j][i])
+		}
+		transposed = append(transposed, newrow)
+	}
+	err = nil
+	return
+}
 func Wrap[V any](series []V, columns int) (rows [][]V) {
 	for i := 0; i < len(series); i += columns {
 		j := min(i + columns, len(series))
