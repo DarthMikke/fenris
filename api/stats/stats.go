@@ -123,11 +123,12 @@ func AnnotatedMax[V int32|int64|float32|float64](numbers []Measurement[V]) Measu
 	return max;
 }
 
-func AnnotatedMin[V int32|int64|float32|float64](numbers []V) float64 {
-	var sum V
+func AnnotatedMin[V int32|int64|float32|float64](numbers []Measurement[V]) Measurement[V] {
+	var min Measurement[V]
 	for _, e := range numbers {
-		sum += e
+		if (e.Data < min.Data) {
+			min = e
+		}
 	}
-	return float64(sum)/float64(len(numbers));
+	return min;
 }
-
