@@ -92,3 +92,10 @@ func Periodise[V any](series []Measurement[V]) [][]Measurement[V] {
 	}
 	return bins
 }
+
+func Reduce[V any, U any](vector [][]V, reducer func([]V) U) (reduced []U) {
+	for _, row := range vector {
+		reduced = append(reduced, reducer(row))
+	}
+	return
+}
