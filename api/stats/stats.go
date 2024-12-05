@@ -148,3 +148,13 @@ func AnnotatedMin[V numeric](numbers []Measurement[V]) Measurement[V] {
 	}
 	return min;
 }
+
+// Return average of a single field in a slice of structs of type V.
+func AverageWithAccessor[V any](series []V, accessor func (V) float64) float64 {
+	var sum float64
+	sum = 0
+	for _, v := range series {
+		sum += accessor(v)
+	}
+	return sum/float64(len(series))
+}
