@@ -14,6 +14,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type DailySummary struct {
+	Min 	float64 `json:"min"`
+	Avg 	float64 `json:"avg"`
+	Max 	float64 `json:"max"`
+}
+
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
 	fmt.Fprintf(w, "Hello, world!")
 }
