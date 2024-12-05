@@ -7,15 +7,12 @@ import {
 } from 'react-router-dom';
 import { Station } from '../../../../..';
 
-export const loader = ({params}: LoaderFunctionArgs) => {
-  // fetch('api/params.stationId/from//to//');
+export const loader = async ({params}: LoaderFunctionArgs) => {
+  const resp = await fetch(`/api/s/${params.stationId}/from/${params.fromYear}/to/${params.toYear}`);
+  const data = await resp.json()
   return {
     ...params,
-    series: {
-      'min': [-18, -17, -11.4, -7, -2, 0.5, 3.2, 4.2, -2, -14.4, -15, -18.4],
-      'p50': [-3.2, -3.8, 0.8, 2.3, 11.5, 15.6, 14.2, 12, 9, 0.6, -3.6, -5],
-      'max': [10.4, 8, 9.8, 14, 27.6, 28.6, 25.8, 20.5, 17.5, 18,5.5, 7.4]
-    },
+    series: data,
     loaded: true,
   };
 };
@@ -47,9 +44,9 @@ export default () => {
         {months.map((month, i) => {
           return <tr>
             <td>{month}</td>
-            <td>{stats.series.min[i]}</td>
-            <td>{stats.series['p50'][i]}</td>
-            <td>{stats.series.max[i]}</td>
+            <td>{stats.series.avgmin[i]}</td>
+            <td>{stats.series.average[i]}</td>
+            <td>{stats.series.avgmax[i]}</td>
           </tr>
         })}
       </tbody>
