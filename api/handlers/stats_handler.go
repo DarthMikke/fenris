@@ -61,9 +61,12 @@ func StatsHandler(f *frost.Api) http.HandlerFunc {
 				fmt.Printf("Multiple observations at %s\n", v.ReferenceTime)
 				series = append(series, stats.Measurement[float64]{
 					Timestamp: v.ReferenceTime,
-					Data: stats.AverageWithAccessor(v.Observations, func(o frost.Observation) float64 {
-						return float64(o.Value)
-					}),
+					Data: stats.AverageWithAccessor(
+						v.Observations,
+						func(o frost.Observation) float64 {
+							return float64(o.Value)
+						},
+					),
 				})
 			}
 		}
@@ -87,9 +90,11 @@ func StatsHandler(f *frost.Api) http.HandlerFunc {
 				Data:	DailySummary {
 					Min: min.Data,
 					Max: max.Data,
-					Avg: stats.AverageWithAccessor(v, func(o stats.Measurement[float64]) float64 {
-						return o.Data
-					}),
+					Avg: stats.AverageWithAccessor(
+						v, func(o stats.Measurement[float64]) float64 {
+							return o.Data
+						},
+					),
 				},
 			}
 			fmt.Println(v, newSummary)
