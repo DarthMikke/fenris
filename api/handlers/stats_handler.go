@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"millim.no/fenris/frost"
 	"millim.no/fenris/stats"
+	"millim.no/fenris/store"
 )
 
 type DailySummary struct {
@@ -17,7 +17,7 @@ type DailySummary struct {
 	Max 	float64 `json:"max"`
 }
 
-func StatsHandler(f *frost.Api, w http.ResponseWriter, r *http.Request) {
+func StatsHandler(_ *frost.Api, s *store.ObservationsStore, w http.ResponseWriter, r *http.Request) {
 	stationId := r.PathValue("stationId")
 	fromYear, err := strconv.Atoi(r.PathValue("fromYear"))
 	if (err != nil) {
@@ -28,47 +28,25 @@ func StatsHandler(f *frost.Api, w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	upstreamResponse, cached, err := f.Observations(
-		[]string{stationId},
-		fmt.Sprintf("%d-01-01/%d-01-01", fromYear, toYear + 1),
-		[]string{"air_temperature"},
-	)
-	if (err != nil) {
-		panic(err)
-	}
-	if (cached) {
-		w.Header().Add("X-Cache-Hit", "1")
-	}
-
-	var decodedData frost.ObservationResponse
-	decoder := json.NewDecoder(strings.NewReader(*upstreamResponse))
-	decoder.Decode(&decodedData)
-
-	var series []stats.Measurement[float64]
-	for _, v := range decodedData.Data {
-		/**
-		 * Multiple observations can be done at the observation time. If this is
-		 * the case, average them and pass a notice to the log/console.
-		 */
-		switch len(v.Observations) {
-		case 1:
-			series = append(series, stats.Measurement[float64]{
-				Timestamp: v.ReferenceTime,
-				Data: float64(v.Observations[0].Value),
-			})
-		default:
-			fmt.Printf("Multiple observations at %s\n", v.ReferenceTime)
-			series = append(series, stats.Measurement[float64]{
-				Timestamp: v.ReferenceTime,
-				Data: stats.AverageWithAccessor(
-					v.Observations,
-					func(o frost.Observation) float64 {
-						return float64(o.Value)
-					},
-				),
-			})
+	series, err := (*s).GetObservations(stationId, fromYear, toYear)
+	if err != nil {
+		if iserr, ok := err.(store.ObservationsStoreError); ok {
+			switch iserr.Details {
+			case store.NoData:
+				// Fetch data
+			case store.FetchingData:
+				// Respond accordingly
+			case store.OutsideOfRange:
+				// Respond accordingly
+			default:
+				panic(err)
+			}
+		} else {
+			panic(err)
 		}
 	}
+
+	w.Header().Add("X-Cache-Hit", "1")
 
 	// Sort into bins with different YYYY-MM-DD component in
 	// the referenceTime field.

@@ -3,10 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+
 	"millim.no/fenris/frost"
+	"millim.no/fenris/store"
 )
 
-func StationHandler(f *frost.Api, w http.ResponseWriter, r *http.Request) {
+func StationHandler(f *frost.Api, _ *store.ObservationsStore, w http.ResponseWriter, r *http.Request) {
 	stationId := r.PathValue("stationId")
 
 	/*
