@@ -49,7 +49,10 @@ func (a *Api) get (url string) (*string, bool, error) {
 		buf.ReadFrom(resp.Body)
 		s := buf.String()
 
-		a.redis.Set(a.Ctx, url, &s, 3_600*1_000_000_000)
+		if resp.StatusCode == 200 {
+			a.redis.Set(a.Ctx, url, &s, 3_600*1_000_000_000)
+		}
+
 		return &s, false, nil
 	} else if (err != nil) {
 		return nil, false, err
