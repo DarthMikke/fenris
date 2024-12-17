@@ -11,6 +11,15 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+type HttpError struct {
+	Code	int
+	Message	string
+}
+
+func (e HttpError) Error() string {
+	return fmt.Sprintf("%i %s", e.Code, e.Message)
+}
+
 type Api struct {
 	Url string
 	clientSecret	string
@@ -45,12 +54,18 @@ func (a *Api) get (url string) (*string, bool, error) {
 		if (err != nil) {
 			return nil, false, err
 		}
+
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(resp.Body)
 		s := buf.String()
 
 		if resp.StatusCode == 200 {
 			a.redis.Set(a.Ctx, url, &s, 3_600*1_000_000_000)
+		} else if resp.StatusCode >= 400 {
+			return &s, false, HttpError{
+				Code: resp.StatusCode,
+				Message: s,
+			}
 		}
 
 		return &s, false, nil
