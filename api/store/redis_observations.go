@@ -1,9 +1,7 @@
 package store
 
 import (
-	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/redis/go-redis/v9"
 	"millim.no/fenris/frost"
@@ -23,7 +21,6 @@ func NewRedisObservationsStore(f *frost.Api, r *redis.Client) *RedisObservations
 }
 
 func (obss RedisObservationsStore)GetObservations (station string, fromYear int, toYear int)	([]stats.Measurement[float64], error) {
-
 	upstreamResponse, _, err := obss.f.Observations(
 		[]string{station},
 		fmt.Sprintf("%d-01-01/%d-01-01", fromYear, toYear + 1),
@@ -33,12 +30,9 @@ func (obss RedisObservationsStore)GetObservations (station string, fromYear int,
 		panic(err)
 	}
 
-	var decodedData frost.ObservationResponse
-	decoder := json.NewDecoder(strings.NewReader(*upstreamResponse))
-	decoder.Decode(&decodedData)
 
 	var series []stats.Measurement[float64]
-	for _, v := range decodedData.Data {
+	for _, v := range upstreamResponse.Data {
 		/**
 		 * Multiple observations can be done at the observation time. If this is
 		 * the case, average them and pass a notice to the log/console.

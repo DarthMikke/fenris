@@ -88,7 +88,7 @@ Implements Frost API's `observations` endpoint.
 
 https://frost.met.no/api.html#!/observations/observations
  */
-func (a *Api) Observations (sources []string, referenceTime string, elements []string) (*string, bool, error) {
+func (a *Api) Observations (sources []string, referenceTime string, elements []string) (*ObservationResponse, bool, error) {
 	queryArgs := []string{
 		"sources=" + strings.Join(sources, ","),
 		"referencetime=" + referenceTime,
@@ -101,12 +101,13 @@ func (a *Api) Observations (sources []string, referenceTime string, elements []s
 		return nil, false, err
 	}
 
-	/*
-	var decoded SourcesResponse;
-	reader := strings.NewReader(*response)
-	decoder := json.NewDecoder(reader)
-	decoder.Decode(&decoded)
-	*/
+	var decodedData ObservationResponse
+	decoder := json.NewDecoder(strings.NewReader(*response))
+	err = decoder.Decode(&decodedData)
 
-	return response, cached, nil
+	if (err != nil) {
+		return nil, false, err
+	}
+
+	return &decodedData, cached, nil
 }
