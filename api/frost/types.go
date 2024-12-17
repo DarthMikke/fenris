@@ -1,5 +1,18 @@
 package frost
 
+type JsonLdResponse struct {
+	Context	string 	`json:"@context"`
+	Type  	string 	`json:"@type"`
+}
+
+type ResponseBase struct {
+	JsonLdResponse
+	ApiVersion string `json:"apiVersion"` // The version of the API that generated this response. ,
+	License string `json:"license"` // The license that applies to this content. ,
+	CreatedAt string `json:"createdAt"` // The time at which this document was created (RFC 3339). ,
+	QueryTime float64 `json:"queryTime"` // The time, in seconds, that this document took to generate. ,
+	CurrentLink string `json:"currentLink"` // The current link indicates the URI that was used to generate the current API response ,
+}
 
 type Source struct {
 	Id	string `json:"id"`
@@ -37,9 +50,7 @@ type Source struct {
 }
 
 type SourcesResponse struct {
-	Context	string 	`json:"@context"`
-	Type  	string 	`json:"@type"`
-	ApiVersion 	string 	`json:"apiVersion"`
+	ResponseBase
 	Data	[]Source 	`json:"data"`
 	/*
 	"apiVersion": "v0",
@@ -56,19 +67,13 @@ type SourcesResponse struct {
 
 
 type ObservationResponse struct {
-Context string `json:"@context"` // The Json-LD context. ,
-Type string `json:"@type"` // The object type. ,
-ApiVersion string `json:"apiVersion"` // The version of the API that generated this response. ,
-License string `json:"license"` // The license that applies to this content. ,
-CreatedAt string `json:"createdAt"` // The time at which this document was created (RFC 3339). ,
-QueryTime string `json:"queryTime"` // The time, in seconds, that this document took to generate. ,
+ResponseBase
 CurrentItemCount int `json:"currentItemCount"` // The current number of items in this result set. ,
 ItemsPerPage int `json:"itemsPerPage"` // The maximum number of items in a result set. ,
 Offset int `json:"offset"` // The offset of the first item in the result set. The Frost API uses a zero-base index. ,
 TotalItemCount int `json:"totalItemCount"` // The total number of items in this specific result set. ,
 NextLink string `json:"nextLink"` // The next link indicates how more data can be retrieved. It points to the URI to load the next set of data. ,
 PreviousLink string `json:"previousLink"` // The previous link indicates how more data can be retrieved. It points to the URI to load the previous set of data. ,
-CurrentLink string `json:"currentLink"` // The current link indicates the URI that was used to generate the current API response ,
 Data []ObservationsAtRefTime `json:"data"` // Container for all the data from the response.
 }
 type ObservationsAtRefTime struct {
@@ -101,4 +106,15 @@ type Level struct {
 LevelType string `json:"levelType"` // The reference type of the level value. ,
 Unit string `json:"unit"` // The unit of measurement of the level value. ,
 Value int `json:"value"` // The level value.
+}
+
+type ErrorResponse struct {
+	ResponseBase
+	Error 	ResponseError `json:"error"`
+}
+
+type ResponseError struct {
+	Code	int		`json:"code"`
+	Message	string	`json:"message"`
+	Reason	string	`json:"reason"`
 }
