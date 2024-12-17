@@ -17,7 +17,7 @@ type HttpError struct {
 }
 
 func (e HttpError) Error() string {
-	return fmt.Sprintf("%i %s", e.Code, e.Message)
+	return fmt.Sprintf("%d %s", e.Code, e.Message)
 }
 
 type Api struct {
