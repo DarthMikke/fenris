@@ -18,6 +18,17 @@ type DailySummary struct {
 }
 
 func StatsHandler(_ *frost.Api, s *store.ObservationsStore, w http.ResponseWriter, r *http.Request) {
+	encoder := json.NewEncoder(w)
+	defer func() {
+		if r := recover(); r != nil {
+			if iserr, ok := r.(error); ok {
+				encoder.Encode(iserr.Error())
+			} else {
+				encoder.Encode(r)
+			}
+		}
+	}()
+
 	stationId := r.PathValue("stationId")
 	fromYear, err := strconv.Atoi(r.PathValue("fromYear"))
 	if (err != nil) {
@@ -78,7 +89,6 @@ func StatsHandler(_ *frost.Api, s *store.ObservationsStore, w http.ResponseWrite
 		binsByDay = append(binsByDay, newSummary)
 	}
 
-	encoder := json.NewEncoder(w)
 	binsByMonth := stats.Periodise(binsByDay, "P1M")
 	threed := stats.Wrap(binsByMonth, 12)
 	threed, err = stats.Transpose(threed)
